@@ -1,0 +1,135 @@
+
+#include <iostream>
+#include <iomanip>
+#include <algorithm>
+using namespace std;
+
+const int DAYS = 30;
+
+// Function to calculate total consumption
+double calculateTotal(double units[]) {
+    double total = 0;
+
+    for (int i = 0; i < DAYS; i++) {
+        total += units[i];
+    }
+
+    return total;
+}
+
+// Function to calculate electricity bill
+double calculateBill(double total) {
+    double bill = 0;
+
+    if (total <= 100) {
+        bill = total * 4.5;
+    }
+    else if (total <= 200) {
+        bill = (100 * 4.5) + (total - 100) * 6.5;
+    }
+    else {
+        bill = (100 * 4.5) + (100 * 6.5)
+               + (total - 200) * 8.0;
+    }
+
+    return bill;
+}
+
+int main() {
+    double units[DAYS];
+    double total, average;
+    double highest, lowest;
+    int highDay = 0, lowDay = 0;
+    double first15 = 0, last15 = 0;
+
+    cout << "====================================\n";
+    cout << " ELECTRICITY CONSUMPTION ANALYSIS\n";
+    cout << "====================================\n";
+
+    // Input daily electricity consumption
+    for (int i = 0; i < DAYS; i++) {
+        cout << "Enter units for Day " << i + 1 << ": ";
+        cin >> units[i];
+
+        // Prevent negative input
+        if (units[i] < 0) {
+            cout << "Invalid input! Enter units again.\n";
+            i--;
+            continue;
+        }
+    }
+
+    // Initialize highest and lowest values
+    highest = units[0];
+    lowest = units[0];
+
+    // Find highest, lowest and period totals
+    for (int i = 0; i < DAYS; i++) {
+        if (units[i] > highest) {
+            highest = units[i];
+            highDay = i;
+        }
+
+        if (units[i] < lowest) {
+            lowest = units[i];
+            lowDay = i;
+        }
+
+        if (i < 15) {
+            first15 += units[i];
+        }
+        else {
+            last15 += units[i];
+        }
+    }
+
+    // Calculate total, average and bill
+    total = calculateTotal(units);
+    average = total / DAYS;
+    double bill = calculateBill(total);
+
+    // Display consumption report
+    cout << fixed << setprecision(2);
+
+    cout << "\n========== MONTHLY REPORT ==========\n";
+    cout << "Total Units: " << total << endl;
+    cout << "Average Daily Units: " << average << endl;
+    cout << "Highest Consumption: " << highest
+         << " units on Day " << highDay + 1 << endl;
+    cout << "Lowest Consumption: " << lowest
+         << " units on Day " << lowDay + 1 << endl;
+    cout << "Estimated Electricity Bill: Rs. "
+         << bill << endl;
+
+    // Compare first and last 15 days
+    cout << "\n========== CONSUMPTION TREND ==========\n";
+
+    if (last15 > first15) {
+        cout << "Consumption increased in the last 15 days.\n";
+    }
+    else if (last15 < first15) {
+        cout << "Consumption decreased in the last 15 days.\n";
+    }
+    else {
+        cout << "Consumption remained the same.\n";
+    }
+
+    // Display a simple bar chart
+    cout << "\n========== DAILY BAR CHART ==========\n";
+
+    for (int i = 0; i < DAYS; i++) {
+        cout << "Day " << setw(2) << i + 1 << " | ";
+
+        int stars = static_cast<int>(units[i] / 2);
+
+        for (int j = 0; j < stars; j++) {
+            cout << "*";
+        }
+
+        cout << " " << units[i] << " units\n";
+    }
+
+    cout << "\nAnalysis completed successfully!\n";
+
+    return 0;
+}
